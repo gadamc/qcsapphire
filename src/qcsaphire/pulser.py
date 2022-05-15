@@ -26,8 +26,8 @@ def discover_devices():
 
 class Pulser:
 
-    def __init__(self, instpath, timeout=3):
-        self._instpath = instpath
+    def __init__(self, port, timeout=3):
+        self._port = port
         self._inst = None
         self._timeout = timeout
         self._open()
@@ -39,7 +39,7 @@ class Pulser:
     def _open(self):
         if self._inst is not None:
             raise RuntimeError('Device has already been opened.')
-        self._inst = Serial(port=self._instpath, timeout=self._timeout)
+        self._inst = Serial(port=self._port, timeout=self._timeout)
 
     def _close(self):
         if self._inst is not None:
@@ -70,11 +70,13 @@ class Pulser:
         return string
 
     def _write(self, data):
-        """Write to device.
+        '''
+        Write to device.
 
         Args:
             data (str): write data
-        """
+        '''
+
         #not sure if this needs to be different for windows/*nix platforms
         newline_char = '\n'
         if sys.platform == 'win32':
@@ -85,34 +87,40 @@ class Pulser:
         self._inst.write(data.encode('utf-8'))
 
     def _readline(self):
-        """Read from device.
+        '''
+        Read from device.
 
         Returns:
-            str: data
-        """
+            a string response from the device.
+        '''
         rdata = self._inst.readline()
         return self._check_error(rdata.decode('utf-8').strip())
 
     def _readlines(self):
-        """Read from device.
+        '''
+        Read from device.
 
         Returns:
-            str: list of data
-        """
+            a list of strings from the device.
+        '''
         rdata = self._inst.readlines()
         return [self._check_error(x.decode('utf-8').strip()) for x in rdata]
 
 ## PUBLIC
 
     def query(self, data):
-        """Write to device and read response.
+        '''
+        Write to device and read response.
 
         Args:
-            data (str): write data
+            data (str)
 
         Returns:
-            str: list of data
-        """
+            a string response from the device.
+
+            IF the argument to this fuction, data = ":INST:COMM?", however,
+            the return is a list of strings from the device.
+        '''
         self._write(data)
         if data.upper() in [':INST:COMM?',':INSTRUMENT:COMM?',':INST:COMMANDS?',':INSTRUMENT:COMMANDS?']:
             return_val = self._readlines()
