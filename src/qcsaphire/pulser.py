@@ -30,26 +30,23 @@ class Pulser:
         self._instpath = instpath
         self._inst = None
         self._timeout = timeout
-        self.open()
+        self._open()
 
+## PRIVATE
     def __del__(self):
-        self.close()
+        self._close()
 
-    @property
-    def instrument(self):
-        return self._inst
-
-    def open(self):
+    def _open(self):
         if self._inst is not None:
             raise RuntimeError('Device has already been opened.')
         self._inst = Serial(port=self._instpath, timeout=self._timeout)
 
-    def close(self):
+    def _close(self):
         if self._inst is not None:
             self._inst.close()
             self._inst = None
 
-    def check_error(self, string):
+    def _check_error(self, string):
 
         if string[0] == '?':
             if string[1] == '1':
@@ -72,7 +69,7 @@ class Pulser:
                 raise Exception(f'Unknown Error Indicator {string}')
         return string
 
-    def write(self, data):
+    def _write(self, data):
         """Write to device.
 
         Args:
@@ -87,23 +84,25 @@ class Pulser:
             data += newline_char
         self._inst.write(data.encode('utf-8'))
 
-    def readline(self):
+    def _readline(self):
         """Read from device.
 
         Returns:
             str: data
         """
         rdata = self._inst.readline()
-        return self.check_error(rdata.decode('utf-8').strip())
+        return self._check_error(rdata.decode('utf-8').strip())
 
-    def readlines(self):
+    def _readlines(self):
         """Read from device.
 
         Returns:
             str: list of data
         """
         rdata = self._inst.readlines()
-        return [self.check_error(x.decode('utf-8').strip()) for x in rdata]
+        return [self._check_error(x.decode('utf-8').strip()) for x in rdata]
+
+## PUBLIC
 
     def query(self, data):
         """Write to device and read response.
@@ -114,10 +113,14 @@ class Pulser:
         Returns:
             str: list of data
         """
-        self.write(data)
+        self._write(data)
         if data.upper() in [':INST:COMM?',':INSTRUMENT:COMM?',':INST:COMMANDS?',':INSTRUMENT:COMMANDS?']:
-            return_val = self.readlines()
+            return_val = self._readlines()
         else:
-            return_val = [self.readline()] #we do this so that this function has a consistent return type
+            return_val = [self._readline()] #we do this so that this function has a consistent return type
 
         return return_val
+
+    @property
+    def instrument(self):
+        return self._inst
