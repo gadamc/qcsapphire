@@ -27,8 +27,8 @@ def discover_devices():
 class Pulser:
 
     def __init__(self, instpath, timeout=3):
-        self.__instpath = instpath
-        self.__inst = None
+        self._instpath = instpath
+        self._inst = None
         self._timeout = timeout
         self.open()
 
@@ -37,17 +37,17 @@ class Pulser:
 
     @property
     def instrument(self):
-        return self.__inst
+        return self._inst
 
     def open(self):
-        if self.__inst is not None:
+        if self._inst is not None:
             raise RuntimeError('Device has already been opened.')
-        self.__inst = Serial(port=self.__instpath, timeout=self._timeout)
+        self._inst = Serial(port=self._instpath, timeout=self._timeout)
 
     def close(self):
-        if self.__inst is not None:
-            self.__inst.close()
-            self.__inst = None
+        if self._inst is not None:
+            self._inst.close()
+            self._inst = None
 
     def check_error(self, string):
 
@@ -85,7 +85,7 @@ class Pulser:
 
         if not data.endswith(newline_char):
             data += newline_char
-        self.__inst.write(data.encode('utf-8'))
+        self._inst.write(data.encode('utf-8'))
 
     def readline(self):
         """Read from device.
@@ -93,7 +93,7 @@ class Pulser:
         Returns:
             str: data
         """
-        rdata = self.__inst.readline()
+        rdata = self._inst.readline()
         return self.check_error(rdata.decode('utf-8').strip())
 
     def readlines(self):
@@ -102,7 +102,7 @@ class Pulser:
         Returns:
             str: list of data
         """
-        rdata = self.__inst.readlines()
+        rdata = self._inst.readlines()
         return [self.check_error(x.decode('utf-8').strip()) for x in rdata]
 
     def query(self, data):
