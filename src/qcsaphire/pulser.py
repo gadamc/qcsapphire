@@ -23,7 +23,6 @@ def discover_devices():
     devices = [[port, desc, hwid] for port, desc, hwid in iterator]
     return devices
 
-#todo -- change all print statements to logger
 
 class Pulser:
 
