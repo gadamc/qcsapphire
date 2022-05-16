@@ -1,12 +1,9 @@
 # Quantum Composer Saphire 9200 Pulser Control
 
 Helper code to communicate with Quantum Composer's
-Saphire 9200 TTL pulse generator box.
+Saphire 9200 TTL pulse generator.
 
-This code facilitates connections to the device and communication, but
-does not offer a full API.
-
-Full API of available commands is found [here](https://www.quantumcomposers.com/_files/ugd/fe3f06_357ff95b25534660b8390c0305582a3f.pdf).
+This code facilitates connections to the device and communication.
 
 ## Installation
 
@@ -20,7 +17,6 @@ python setup.py install
 
 ### Determine the port
 
-First, you need to determine the name of the port connected to your device.
 
 ```python
 import qcsaphire
@@ -49,15 +45,40 @@ my_pulser = qcsaphire.Pulser('/dev/cu.usmbodem141101')
 For normal usage, all commands sent to the device should use the `query()` method.
 The `query()` method will write a command, read the response from the device,
 check for errors (raising an Exception when an error is found) and return the string
-response if no error is found. For example.
+response. For example,
 
 ```python
 ret_val = my_pulser.query(':PULSE0:STATE?')
 print(ret_val)
+'0'
+```
+
+```python
+ret_val = my_pulser.query(':PULSE1:WIDTH 0.000025')
+print(ret_val)
 'ok'
 ```
 
-The user is responsible for sending the correct command strings by following
+#### Property-Like Calls
+
+It's possible to make the same calls to the pulser using a property-like call.
+Instead of calling `my_pulser.query("command1:subcommand:subsubcommand value")`,
+one can call `my_pulser.command1.subcommand.subsubcommand(value)`, which is more readable.
+
+For example,
+
+```python
+ret_val = p.pulse1.width(0.000025) #sets the width of channel A
+print(ret_val) # 'ok'
+
+width = p.pulse1.width() #asks for the width of channel A
+print(width) # '0.000025000'
+```
+
+All of the SCPI commands can be built this way.
+
+In either case, the user is responsible
+for sending the correct command strings by following
 [the API](https://www.quantumcomposers.com/_files/ugd/fe3f06_357ff95b25534660b8390c0305582a3f.pdf).
-However, there is no need to worry about string encoding and carriage returns / line feeds,
+It should be pointed out there is no need to worry about string encoding and carriage returns / line feeds,
 as that is taken care of by the code.
