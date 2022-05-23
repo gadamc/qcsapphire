@@ -1,15 +1,15 @@
-# Quantum Composer Saphire 9200 Pulser Control
+# Quantum Composer Sapphire 9200 Pulser Control
 
 Helper code to communicate with Quantum Composer's
-Saphire 9200 TTL pulse generator.
+Sapphire 9200 TTL pulse generator.
 
 This code facilitates connections to the device and communication.
 
 ## Installation
 
 ```
-git clone https://github.com/gadamc/qcsaphire
-cd qcsaphire
+git clone https://github.com/gadamc/qcsapphire
+cd qcsapphire
 python setup.py install
 ```
 
@@ -19,8 +19,8 @@ python setup.py install
 
 
 ```python
-import qcsaphire
-qcsaphire.discover_devices()
+import qcsapphire
+qcsapphire.discover_devices()
 ```
 
 Will return a list of ports and information about devices connected to those ports.
@@ -37,7 +37,7 @@ For example
 ### Connection to Pulser
 
 ```python
-my_pulser = qcsaphire.Pulser('/dev/cu.usmbodem141101')
+my_pulser = qcsapphire.Pulser('/dev/cu.usmbodem141101')
 ```
 
 ### Communication
@@ -68,10 +68,10 @@ one can call `my_pulser.command1.subcommand.subsubcommand(value)`, which is more
 For example,
 
 ```python
-ret_val = p.pulse1.width(0.000025) #sets the width of channel A
+ret_val = my_pulser.pulse1.width(0.000025) #sets the width of channel A
 print(ret_val) # 'ok'
 
-width = p.pulse1.width() #asks for the width of channel A
+width = my_pulser.pulse1.width() #asks for the width of channel A
 print(width) # '0.000025000'
 ```
 

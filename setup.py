@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from setuptools import setup, find_namespace_packages
-from src.qcsaphire.__version__ import __version__
+from src.qcsapphire.__version__ import __version__
 
 requirements = [
     'pyserial',
@@ -14,16 +14,16 @@ with open('README.md', 'r') as file:
 
 
 setup(
-    name='qcsaphire',  # Choose a custom name
+    name='qcsapphire',  # Choose a custom name
     version=__version__,  # Automatically deduced from "VERSION" file (see above)
     packages=find_namespace_packages(where='src'),  # This should be enough for 95% of the use-cases
     package_dir={'': 'src'},  # same
     package_data={'': ['README.md'],  # include data files
                   },
-    description='A package for communicating with the Quantum Composer Saphire 9200 TTL pulse generator',
+    description='A package for communicating with the Quantum Composer Sapphire 9200 TTL pulse generator',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/gadamc/qcsaphire',
+    url='https://github.com/gadamc/qcsapphire',
 
     license='LGPLv3',  # License tag
     install_requires=requirements,  # package dependencies
