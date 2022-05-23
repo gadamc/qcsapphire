@@ -82,3 +82,15 @@ for sending the correct command strings by following
 [the API](https://www.quantumcomposers.com/_files/ugd/fe3f06_357ff95b25534660b8390c0305582a3f.pdf).
 It should be pointed out there is no need to worry about string encoding and carriage returns / line feeds,
 as that is taken care of by the code.
+
+### Debugging
+
+If you hit an error, especially when trying to use the property-like calls,
+the last string written to the Serial port is found in the
+`.last_write_command` attribute of the pulser object.
+
+```python
+my_pulser.pulse1.width(25e-6)
+print(my_pulser.last_write_command)
+# ':PULSE1:WIDTH 2.5e-05'
+```
