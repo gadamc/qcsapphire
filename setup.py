@@ -25,7 +25,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/gadamc/qcsapphire',
 
-    license='LGPLv3',  # License tag
+    license='GPLv3',  # License tag
     install_requires=requirements,  # package dependencies
     python_requires='~=3.8',  # Specify compatible Python versions
 )
