@@ -197,6 +197,30 @@ class Pulser:
 
         return return_val
 
+    def report_global_settings(self):
+        system_command_list = ['STATE','PERIOD','MODE','BCOUNTER','PCOUNTER',
+                                'OCOUNTER','EXTERNAL:MODE','EXTERNAL:LEVEL',
+                                'EXTERNAL:EDGE','EXTERNAL:POLARITY']
+
+        setting_vals = []
+        for c in system_command_list:
+            command = f':PULSE0:{c}?'
+            setting_vals.append( (command, self.query(command)) )
+
+        return setting_vals
+
+    def report_channel_settings(self, channel):
+        channel_command_list = ['STATE','WIDTH','DELAY','SYNC','MUX',
+                                'POLARITY','OUTPUT:AMPLITUDE','CMODE',
+                                'BCOUNTER','PCOUNTER','WCOUNTER','CGATE']
+
+        setting_vals = []
+        for c in channel_command_list:
+            command = f':PULSE{channel}:{c}?'
+            setting_vals.append( (command, self.query(command) ))
+
+        return setting_vals
+
     def command_history(self):
         '''
         returns an iterator to the most recent 1000 commands
