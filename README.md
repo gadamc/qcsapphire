@@ -1,9 +1,9 @@
 # Quantum Composer Sapphire 9200 Pulser Control
 
-Helper code to communicate with Quantum Composer's
-Sapphire 9200 TTL pulse generator.
+Helper code to communicate with [Quantum Composer's
+Sapphire 9200 TTL pulse generator](https://www.quantumcomposers.com/_files/ugd/fe3f06_357ff95b25534660b8390c0305582a3f.pdf).
 
-This code facilitates connections to the device and communication.
+This code facilitates connections to the device, communication, error handling and system status.
 
 ## Installation
 
@@ -42,7 +42,9 @@ my_pulser = qcsapphire.Pulser('/dev/cu.usmbodem141101')
 
 ### Communication
 
-For normal usage, all commands sent to the device should use the `query()` method.
+For normal usage, all commands sent to the device should use the `query()` method or
+with property-like calls (see section below).
+
 The `query()` method will write a command, read the response from the device,
 check for errors (raising an Exception when an error is found) and return the string
 response. For example,
@@ -57,6 +59,10 @@ print(ret_val)
 ret_val = my_pulser.query(':PULSE1:WIDTH 0.000025')
 print(ret_val)
 'ok'
+
+ret_val = my_pulser.query(':PULSE1:WIDTH?')
+print(ret_val)
+'0.000025000'
 ```
 
 #### Property-Like Calls
@@ -83,6 +89,28 @@ for sending the correct command strings by following
 It should be pointed out there is no need to worry about string encoding and carriage returns / line feeds,
 as that is taken care of by the code.
 
+### Global and Channel States
+
+Two methods exist to report on global and channel settings
+
+##### Global Settings
+
+```python
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
+pp.pprint(my_pulser.report_global_settings())
+```
+
+##### Channel Settings
+
+```python
+for channel in range(1,5):
+    pp.pprint(f'channel {channel}')
+    pp.pprint(my_pulser.report_channel_settings(channel))
+```
+
+
 ### Debugging
 
 If you hit an error, especially when trying to use the property-like calls,
@@ -94,3 +122,19 @@ my_pulser.pulse1.width(25e-6)
 print(my_pulser.last_write_command)
 # ':PULSE1:WIDTH 2.5e-05'
 ```
+
+Additionally, you can see the recent command history of the object (last 1000 commands)
+
+```python
+for command in my_pulser.command_history():
+  print(command)
+```
+
+# LICENSE
+
+[LICENCE](LICENSE)
+
+##### Acknowledgments
+
+The `Property` class of this code was taken from `easy-scpi`: https://github.com/bicarlsen/easy-scpi
+and modified.
