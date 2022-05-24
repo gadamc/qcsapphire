@@ -1,5 +1,6 @@
 import os
 import sys
+import collections
 from serial import Serial
 
 def discover_devices():
@@ -77,6 +78,7 @@ class Pulser:
         self.arg_separator = ':'
         self.last_write_command = None
         self._open()
+        self._command_history = collections.deque(maxlen=1000)
 
 ## PRIVATE
     def __del__(self):
@@ -150,6 +152,7 @@ class Pulser:
 
         #we put this below the .write method in case it raises an exception
         self.last_write_command = data.strip()
+        self._command_history.append(data.strip())
 
     def _readline(self):
         '''
@@ -193,6 +196,16 @@ class Pulser:
             return_val = self._readline()
 
         return return_val
+
+    def command_history(self):
+        '''
+        returns an iterator to the most recent 1000 commands
+        sent to the device by an instance of this class.
+
+        The interator is in order of most recent command first.
+
+        '''
+        return reversed(self._command_history)
 
     @property
     def instrument(self):
