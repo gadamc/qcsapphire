@@ -42,14 +42,14 @@ class Property( object ):
             arguments in a method call.
             [Default: ':']
         '''
-        self.__inst = inst  # the instrument
+        self._pulser = inst  # a Pulser object
         self.name = name.upper()
         self.arg_separator = arg_separator
 
 
     def __getattr__( self, name ):
         return Property(
-            self.__inst,
+            self._pulser,
             ':'.join( ( self.name, name.upper() ) ),
             arg_separator = self.arg_separator
         )
@@ -58,7 +58,7 @@ class Property( object ):
     def __call__( self, *values ):
         if len( values ) == 0:
             # get property
-            return self.__inst.query( f'{self.arg_separator}{ self.name }?')
+            return self._pulser.query( f'{self.arg_separator}{ self.name }?')
 
         else:
             # set value
@@ -66,7 +66,7 @@ class Property( object ):
             values = self.arg_separator.join( values )
 
             cmd = f'{self.arg_separator}{ self.name } { values }'
-            return self.__inst.query( cmd )
+            return self._pulser.query( cmd )
 
 
 class Pulser:
@@ -230,3 +230,10 @@ class Pulser:
 
         '''
         return reversed(self._command_history)
+
+## Special COMMANDS
+    def software_trigger(self):
+        '''
+        Issue software trigger: '*TRG'
+        '''
+        return self.query('*TRG')
