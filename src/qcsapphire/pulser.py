@@ -77,32 +77,23 @@ class Pulser:
         self._timeout = timeout
         self.arg_separator = ':'
         self.last_write_command = None
-        self._open()
+        self.open()
         self._command_history = collections.deque(maxlen=1000)
 
 ## PRIVATE
     def __del__(self):
-        self._close()
+        self.close()
 
     def __enter__( self ):
         return self
 
     def __exit__( self, exc_type, exc_value, traceback ):
-        self._close()
+        self.close()
 
     def __getattr__( self, name ):
         resp = Property( self, name, arg_separator = self.arg_separator )
         return resp
 
-    def _open(self):
-        if self._inst is not None:
-            raise RuntimeError('Device has already been opened.')
-        self._inst = Serial(port=self._port, timeout=self._timeout)
-
-    def _close(self):
-        if self._inst is not None:
-            self._inst.close()
-            self._inst = None
 
     def _check_error(self, string):
 
@@ -175,6 +166,15 @@ class Pulser:
         return [self._check_error(x.decode('utf-8').strip()) for x in rdata]
 
 ## PUBLIC
+
+    def open(self):
+        if self._inst is None:
+            self._inst = Serial(port=self._port, timeout=self._timeout)
+
+    def close(self):
+        if self._inst is not None:
+            self._inst.close()
+            self._inst = None
 
     def query(self, data):
         '''
