@@ -206,7 +206,3 @@ class Pulser:
 
         '''
         return reversed(self._command_history)
-
-    @property
-    def instrument(self):
-        return self._inst
