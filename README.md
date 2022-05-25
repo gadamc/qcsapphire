@@ -24,7 +24,7 @@ qcsapphire.discover_devices()
 ```
 
 Will return a list of ports and information about devices connected to those ports.
-For example
+For example, on *nix platforms, you may see
 
 ```python
 [['/dev/cu.BLTH', 'n/a', 'n/a'],
@@ -34,10 +34,33 @@ For example
   'USB VID:PID=04D8:000A LOCATION=20-1.1']]
 ```
 
+The device here is connected to `\dev\cu.usbmodem141101`.
+
+On Windows you may see
+
+```python
+[['COM3',
+  'Intel(R) Active Management Technology - SOL (COM3)',
+  'PCI\\VEN_8086&DEV_43E3&SUBSYS_0A541028&REV_11\\3&11583659&1&B3'],
+ ['COM5',
+  'USB Serial Device (COM5)',
+  'USB VID:PID=0483:A3E5 SER=206A36705430 LOCATION=1-2:x.0'],
+ ['COM6',
+  'USB Serial Device (COM6)',
+  'USB VID:PID=04D8:000A SER= LOCATION=1-8:x.0'],
+ ['COM7',
+  'USB Serial Device (COM7)',
+  'USB VID:PID=239A:8014 SER=3B0D07C25831555020312E341A3214FF LOCATION=1-6:x.0']]
+  ```
+
+It is certainly not obvious to which USB port the QC Sapphire is connected. However,
+using the Windows Task Manager, as well as trial and error, should eventually
+reveal the correct serial port to use. In this case, `COM6`.
+
 ### Connection to Pulser
 
 ```python
-my_pulser = qcsapphire.Pulser('/dev/cu.usmbodem141101')
+my_pulser = qcsapphire.Pulser('COM6')
 ```
 
 ### Communication
