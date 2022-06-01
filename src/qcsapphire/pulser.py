@@ -79,6 +79,7 @@ class Pulser:
         self.last_write_command = None
         self.open()
         self._command_history = collections.deque(maxlen=1000)
+        self._read_hardware_versions()
 
 ## PRIVATE
     def __del__(self):
@@ -93,7 +94,6 @@ class Pulser:
     def __getattr__( self, name ):
         resp = Property( self, name, arg_separator = self.arg_separator )
         return resp
-
 
     def _check_error(self, string):
 
@@ -165,6 +165,13 @@ class Pulser:
         rdata = self._inst.readlines()
         return [self._check_error(x.decode('utf-8').strip()) for x in rdata]
 
+    def _read_hardware_versions(self):
+        res_str = self.query('*IDN?')
+        _, model_number, serial_number, firm_fpga = res_str.split(',')
+        self.model_number = model_number
+        self.serial_number = serial_number
+        self.firmware_version, self.fpga_version = firm_fpga.split('-')
+
 ## PUBLIC
 
     def open(self):
@@ -196,6 +203,9 @@ class Pulser:
             return_val = self._readline()
 
         return return_val
+
+    def report_hardware(self):
+        return [self.model_number, self.serial_number, self.firmware_version, self.fpga_version]
 
     def report_global_settings(self):
         system_command_list = ['STATE','PERIOD','MODE','BCOUNTER','PCOUNTER',
@@ -237,3 +247,21 @@ class Pulser:
         Issue software trigger: '*TRG'
         '''
         return self.query('*TRG')
+
+## Helper Functions
+
+    def get_number_of_channels(self):
+        if self.model_number.startswith('9214'):
+            return 4
+        if self.model_number.startswith('9212'):
+            return 2
+        else:
+            return -1
+
+    def set_all_state_off(self):
+        self.pulse0.state(0)
+        self.pulse1.state(0)
+        self.pulse2.state(0)
+        if self.model_number.startswith('9214'):
+            self.pulse3.state(0)
+            self.pulse4.state(0)

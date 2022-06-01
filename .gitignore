@@ -2,3 +2,4 @@
 src/qcsapphire.egg-info/*
 build/*
 dist/*
+.idea/*
