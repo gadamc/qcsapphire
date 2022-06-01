@@ -133,6 +133,71 @@ for channel in range(1,5):
     pp.pprint(my_pulser.report_channel_settings(channel))
 ```
 
+### Examples
+
+After reading the documentation for the device, you'll notice there
+are four output channels (A, B, C and D) and an internal global system.
+
+The internal global system is referenced as `:PULSE0` (or `my_pulser.pulse0`).
+To the output channels are references as (A = `pulse1`, B = `pulse2'`, C = `pulse3`,
+and D = `pulse4`).
+
+
+#### Continuous Pulse on Channel A
+
+```python
+import qcsapphire
+
+my_pulser = qcsapphire.Pulser('COM6')
+
+my_pulser.pulse0.mode('normal')
+my_pulser.pulse0.period(1.00) #1 second period on internal trigger
+my_pulser.pulse0.external.mode('disabled')
+my_pulser.pulse1.cmode('normal')
+my_pulser.pulse1.polarity('normal')
+my_pulser.pulse1.width(0.05) #50 ms wide pulse
+
+#don't turn on yet
+my_pulser.pulse1.state(0)
+my_pulser.pulse0.state(0)
+
+#turn on Pulser
+my_pulser.pulse0.state(1) #turns on internal signal (pulse0)
+my_pulser.pulse1.state(1) #turns on channel A (A = pulse1, B = pulse2, C = pulse3, D = pulse4)
+```
+
+#### Trigger Pulses on Channel A via Software Trigger
+
+```python
+my_pulser.pulse0.mode('single')
+my_pulser.pulse0.period(0.2) #200 ms system pulse
+my_pulser.pulse0.external.mode('trigger')
+my_pulser.pulse1.cmode('single')
+my_pulser.pulse1.polarity('normal')
+my_pulser.pulse1.width(0.05) #50 ms wide pulse
+my_pulser.pulse1.state(0)
+my_pulser.pulse0.state(0)
+
+
+#trigger loop example
+
+#wait N seconds between triggers
+wait_N = 5.0
+N_pulses = 50
+
+#activate pulser and output channel
+my_pulser.pulse0.state(1)
+my_pulser.pulse1.state(1)
+
+for i in range(N_pulses):
+    my_pulser.software_trigger() #trigger the pulser
+    time.sleep(wait_N)
+
+#deactivate
+my_pulser.pulse0.state(0)
+my_pulser.pulse1.state(0)
+```
+
 
 ### Debugging
 
