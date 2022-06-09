@@ -267,16 +267,33 @@ class Pulser:
             self.pulse4.state(0)
 
     def channel(self, chan):
+        '''
+        alias to Pulser.pulse(chan)
+        '''
+        return self.pulse(chan)
+
+
+    def channel_names(self):
         if self.model_number.startswith('9214'):
             channels = ['T', 'A', 'B', 'C', 'D']
         else:
             channels = ['T', 'A', 'B']
+
+        return channels
+    def pulse(self, chan):
+
+        channels = self.channel_names()
+
         assert type(chan) in [type('A'), type(0)]
         if type(chan) == type('A'):
-            if channel.find(chan) == -1:
+            if channels.index(chan) == -1:
                 raise ValueError(f'Incorrect channel name. {chan} not in {channels}')
-            chan = channel.find(chan)
+            chan = channels.index(chan)
         else:
             assert chan in list(range(len(channels)))
 
         return self.__getattr__(f'pulse{chan}')
+
+    @property
+    def system(self):
+        return self.channel("T")
