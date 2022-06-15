@@ -10,7 +10,7 @@ This code facilitates connections to the device, communication, error handling a
 ```
 git clone https://github.com/gadamc/qcsapphire
 cd qcsapphire
-python setup.py install
+python -m pip install .
 ```
 
 ## Usage
