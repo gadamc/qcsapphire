@@ -172,6 +172,20 @@ class Pulser:
         self.serial_number = serial_number
         self.firmware_version, self.fpga_version = firm_fpga.split('-')
 
+    def _convert_channel_name_to_int(self, channel):
+
+        assert type(channel) in [type('A'), type(0)]
+        channels = self.channel_names()
+
+        if type(channel) == type('A'):
+            if channels.index(channel) == -1:
+                raise ValueError(f'Incorrect channel name. {channel} not in {channels}')
+            channel = channels.index(channel)
+        else:
+            assert channel in list(range(len(channels)))
+
+        return channel
+
 ## PUBLIC
 
     def open(self):
@@ -204,6 +218,17 @@ class Pulser:
 
         return return_val
 
+    def multiplex(self, timer_channels, output_channel):
+        mux_value = 0
+        for timer in timer_channels:
+            timer_chan = self._convert_channel_name_to_int(timer)
+            mux_value += 2**(timer_chan - 1) #channel A starts at 1
+
+        return self.channel(output_channel).mux(mux_value)
+
+    def flush(self):
+        return self._readlines()
+
     def report_hardware(self):
         return [self.model_number, self.serial_number, self.firmware_version, self.fpga_version]
 
@@ -220,9 +245,12 @@ class Pulser:
         return setting_vals
 
     def report_channel_settings(self, channel):
+
+        channel = self._convert_channel_name_to_int(channel)
+
         channel_command_list = ['STATE','WIDTH','DELAY','SYNC','MUX',
                                 'POLARITY','OUTPUT:AMPLITUDE','CMODE',
-                                'BCOUNTER','PCOUNTER','WCOUNTER','CGATE']
+                                'BCOUNTER','PCOUNTER','OCOUNTER','WCOUNTER','CGATE']
 
         setting_vals = []
         for c in channel_command_list:
@@ -280,18 +308,9 @@ class Pulser:
             channels = ['T', 'A', 'B']
 
         return channels
+
     def pulse(self, chan):
-
-        channels = self.channel_names()
-
-        assert type(chan) in [type('A'), type(0)]
-        if type(chan) == type('A'):
-            if channels.index(chan) == -1:
-                raise ValueError(f'Incorrect channel name. {chan} not in {channels}')
-            chan = channels.index(chan)
-        else:
-            assert chan in list(range(len(channels)))
-
+        chan = self._convert_channel_name_to_int(chan)
         return self.__getattr__(f'pulse{chan}')
 
     @property
