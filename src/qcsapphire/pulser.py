@@ -62,7 +62,15 @@ class Property( object ):
 
         else:
             # set value
-            values = [ str( val ) for val in values ]
+            def _to_str(val):
+                if type(val) == str:
+                    return val
+                if type(val) == int:
+                    return str(val)
+                else:
+                    return '{:.8f}'.format(val)
+
+            values = [ _to_str( val ) for val in values ]
             values = self.arg_separator.join( values )
 
             cmd = f'{self.arg_separator}{ self.name } { values }'
